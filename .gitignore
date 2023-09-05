@@ -9,3 +9,7 @@ lib
 lisp
 msg_gen
 srv_gen
+
+
+.vscode 
+stomp_motion_planner/.vscode

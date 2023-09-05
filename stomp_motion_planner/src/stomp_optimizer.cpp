@@ -422,7 +422,7 @@ void StompOptimizer::calculateCollisionIncrements()
   Vector3d cartesian_gradient;
 
   collision_increments_.setZero(num_vars_free_, num_joints_);
-  for (int i=free_vars_start_; i<=free_vars_end_; i++)
+  for (int i=free_vars_start_; i<=free_vars_end_; i++) // 没理解错的话， start - end 类似 MPPI horizon
   {
     for (int j=0; j<num_collision_points_; j++)
     {
@@ -437,7 +437,7 @@ void StompOptimizer::calculateCollisionIncrements()
 
       // all math from the STOMP paper:
 
-      normalized_velocity = collision_point_vel_eigen_[i][j] / vel_mag;
+      normalized_velocity = collision_point_vel_eigen_[i][j] / vel_mag;  // 关节碰撞点位 速度单位向量
       orthogonal_projector = Matrix3d::Identity() - (normalized_velocity * normalized_velocity.transpose());
       curvature_vector = (orthogonal_projector * collision_point_acc_eigen_[i][j]) / vel_mag_sq;
       cartesian_gradient = vel_mag*(orthogonal_projector*potential_gradient - potential*curvature_vector);
@@ -1099,7 +1099,7 @@ bool StompOptimizer::execute(std::vector<Eigen::VectorXd>& parameters, Eigen::Ve
     double cumulative = 0.0;
     for (int j=0; j<num_collision_points_; j++)
     {
-      cumulative += collision_point_potential_[i][j] * collision_point_vel_mag_[i][j];
+      cumulative += collision_point_potential_[i][j] * collision_point_vel_mag_[i][j]; // 碰撞代价计算方式
       //state_collision_cost += collision_point_potential_[i][j] * collision_point_vel_mag_[i][j];
       state_collision_cost += cumulative;
     }
@@ -1145,7 +1145,7 @@ bool StompOptimizer::execute(std::vector<Eigen::VectorXd>& parameters, Eigen::Ve
     constraint_cost += parameters_->getConstraintCostWeight() * state_constraint_cost;
     torque_cost += parameters_->getTorqueCostWeight() * state_torque_cost;
 
-    costs(i-free_vars_start_) =
+    costs(i-free_vars_start_) = //整体的cost计算
         parameters_->getObstacleCostWeight() * state_collision_cost +
         parameters_->getConstraintCostWeight() * state_constraint_cost +
         parameters_->getTorqueCostWeight() * state_torque_cost;

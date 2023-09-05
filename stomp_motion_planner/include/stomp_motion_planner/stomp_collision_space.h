@@ -211,9 +211,9 @@ bool StompCollisionSpace::getCollisionPointPotentialGradient(const StompCollisio
     potential = 0.0;
     gradient.setZero();
   }
-  else if (d >= 0.0)
+  else if (d >= 0.0) // potential = 1/2a * (x-a)^2 | gradient = (x-a)/a * field_gradient
   {
-    double diff = (d - collision_point.getClearance());
+    double diff = (d - collision_point.getClearance()); 
     double gradient_magnitude = diff * collision_point.getInvClearance(); // (diff / clearance)
     potential = 0.5*gradient_magnitude*diff;
     gradient = gradient_magnitude * field_gradient;
